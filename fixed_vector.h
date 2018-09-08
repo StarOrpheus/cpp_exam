@@ -5,7 +5,9 @@
 #ifndef FIXED_VECTOR_FIXED_VECTOR_H
 #define FIXED_VECTOR_FIXED_VECTOR_H
 
+#include <cstdio>
 
+template <typename T, size_t max_size>
 class fixed_vector {
 
 };
