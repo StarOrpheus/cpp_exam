@@ -229,7 +229,7 @@ public:
         return const_reverse_iterator(cbegin());
     }
 
-    const_iterator inseart(size_t const &pos, size_t const &val) {
+    const_iterator insert(size_t const &pos, size_t const &val) {
         if (_size >= N) {
             throw std::bad_alloc{};
         }
