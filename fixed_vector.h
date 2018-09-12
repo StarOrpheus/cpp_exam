@@ -101,132 +101,41 @@ public:
         return N;
     }
 
-    struct c_iterator : std::iterator<std::bidirectional_iterator_tag, const T> {
-        fixed_vector<T, N> const *current_vector;
+    using iterator = T*;
+    using const_iterator = T const*;
+    using reverse_iterator = std::reverse_iterator<iterator>;
+    using const_reverse_iterator = std::reverse_iterator<const_iterator>;
 
-        c_iterator() = default;
-
-        c_iterator operator++() {
-            ++pos;
-            return *this;
-        }
-
-        c_iterator operator--() {
-            if (pos == 0) {
-                pos = current_vector->size() - 1;
-            } else {
-                --pos;
-            }
-            return *this;
-        }
-
-        const c_iterator operator++(int) {
-            c_iterator result(*this);
-            operator++();
-            return result;
-        }
-
-        const c_iterator operator--(int) {
-            c_iterator result(*this);
-            operator--();
-            return result;
-        }
-
-        T const &operator*() const {
-            return (*current_vector)[pos];
-        }
-
-        T const *operator->() const {
-            return &((*current_vector)[pos]);
-        }
-
-        c_iterator(c_iterator const &rhs) {
-            current_vector = rhs.current_vector;
-            pos = rhs.pos;
-        }
-
-        c_iterator &operator=(c_iterator const &rhs) {
-            current_vector = rhs.current_vector;
-            pos = rhs.pos;
-            return *this;
-        }
-
-    private:
-        size_t pos;
-
-        c_iterator(fixed_vector const &vc, size_t pos) : current_vector(&vc), pos(pos) {}
-
-        c_iterator(fixed_vector const *vc, size_t pos) : current_vector(vc), pos(pos) {}
-
-        friend class fixed_vector<T, N>;
-
-        friend bool operator==(c_iterator const &a, c_iterator const &b) {
-            return a.current_vector == b.current_vector && a.pos == b.pos;
-        }
-
-        friend bool operator!=(c_iterator const &a, c_iterator const &b) {
-            return a.current_vector != b.current_vector || a.pos != b.pos;
-        }
-
-        friend bool operator<(c_iterator const &a, c_iterator const &b) {
-            return a.pos < b.pos;
-        }
-
-        friend bool operator>(c_iterator const &a, c_iterator const &b) {
-            return a.pos > b.pos;
-        }
-
-        friend bool operator<=(c_iterator const &a, c_iterator const &b) {
-            return a.pos <= b.pos;
-        }
-
-        friend bool operator>=(c_iterator const &a, c_iterator const &b) {
-            return a.pos >= b.pos;
-        }
-    };
-
-public:
-    typedef c_iterator const_iterator;
-    typedef const_iterator iterator;
-    typedef std::reverse_iterator<iterator> reverse_iterator;
-    typedef std::reverse_iterator<const_iterator> const_reverse_iterator;
-
+    iterator begin() {
+        return reinterpret_cast<T*>(data);
+    }
 
     const_iterator begin() const {
-        return c_iterator(this, 0);
-    }
-
-    const_iterator end() const {
-        return c_iterator(this, _size);
-    }
-
-    const_iterator cbegin() const {
-        return begin();
-    }
-
-    const_iterator cend() const {
-        return end();
+        return const_cast<T const*>(reinterpret_cast<T*>(data));
     }
 
     reverse_iterator rbegin() {
-        return reverse_iterator(end());
+        return reverse_iterator(reinterpret_cast<T*>(data) + N);
     }
 
     const_reverse_iterator rbegin() const {
-        return reverse_iterator(end());
+        return const_reverse_iterator(const_cast<T const*>(reinterpret_cast<T*>(data) + N));
     }
 
+    iterator end() {
+        return reinterpret_cast<T*>(data) + N;
+    }
+
+    const_iterator end() const {
+        return const_cast<T const*>(reinterpret_cast<T*>(data) + N);
+    }
+
+    reverse_iterator rend() {
+        return reverse_iterator(reinterpret_cast<T*>(data));
+    }
 
     const_reverse_iterator rend() const {
-        return reverse_iterator(begin());
-    }
-
-    const_reverse_iterator crbegin() const {
-        return const_reverse_iterator(cend());
-    }
-
-    const_reverse_iterator crend() const {
-        return const_reverse_iterator(cbegin());
+        return const_reverse_iterator(const_cast<T const*>(reinterpret_cast<T*>(data)));
     }
 
     const_iterator insert(size_t const &pos, size_t const &val) {
